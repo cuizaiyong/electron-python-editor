@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electron Python</title>
+    <style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			html {
+				background-color: #fff;
+			}
+			h1 {
+				margin: 20px;
+			}
+			button {
+				margin-left: 20px;
+			}
+			textarea {
+				padding: 3px;
+				display: block;
+				margin: 20px;
+			}
+			.console-wrapper {
+				position: fixed;
+				width: 100%;
+				height: 200px;
+				background-color: #555;
+				bottom: 0;
+				color: #eee;
+				padding: 10px;
+				overflow-y: scroll;
+			}
+			.check-wrapper {
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				/* background-color: rgba(6, 6, 6, 0.6); */
+			}
+			.check-wrapper p {
+				font-size: 20px;
+				color: rgb(148, 33, 33);
+			}
+			.check-wrapper button {
+				width: 60px;
+				height: 44px;
+				line-height: 44px;
+				border: none;
+				font-size: 16px;
+				margin-top: 10px;
+				margin-left: 210px;
+				cursor: pointer;
+			}
+			.download-wrapper {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.progress-wrapper {
+				flex: 500px 0 0;
+				height: 20px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				/* overflow: hidden; */
+			}
+    </style>
+    <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+</head>
+<body>
+    <div id="app">
+			<!-- 为什么这儿一定要使用闭合标签 -->
+				<Check v-show="shouldInstall && !installing"></Check>
+				<Download v-show="installing" :progress="progress"></Download>
+				<div class="main-wrapper" v-show="!shouldInstall && !installing">
+					<h1>Welcome to Python Editor.</h1>
+					<button v-on:click="install">Install Requests Module</button>
+					<textarea name="" id="" cols="50" rows="10" v-model="pythonCode"></textarea>
+					<button v-on:click="run">Run Code</button>
+					<button v-on:click="runPygame">Run Pygame Demo</button>
+					<div class="console-wrapper">
+						<p>{{ runResult }}</p>
+						<p v-show="isRunning">运行结束</p>
+					</div>
+				</div>
+    </div>
+</body>
+<script>
+	const { ipcRenderer } = require('electron');
+	const bus = new Vue();
+	Vue.component('Check', {
+		render(h) {
+			return h('div', { 
+				class: {
+					'check-wrapper': true
+				},
+			}, [
+				h('div.btn-wrapper', [
+					h('p', '检测到系统还没有安装Python Runtime，请点击安装!'),
+					h('button', {
+						on: {
+							click: function () {
+								bus.$emit('installing', true);
+								ipcRenderer.send('initialCompiler');
+							}
+						}
+					}, '安装')
+				])
+			])
+		}
+	})
+	Vue.component('Download', {
+		props: {
+			progress: Number,
+			default: 0
+		},
+		render(h) {
+			const progress = this.progress;
+			return h('div', {
+				class: {
+					'download-wrapper': true
+				}
+			}, [
+				h('div', {
+					class: {
+						'progress-wrapper': true
+					},
+					style: {
+						position: 'relative'
+					}
+				},
+				[
+					h('div', {
+						class: {
+							progressed: true
+						},
+						style: {
+							width: progress + '%',
+							backgroundColor: 'green',
+							height: '100%',
+							borderRadius: progress >= 100 ? '5px' : 'none'
+						}
+					}),
+					h('span', {
+						style: {
+							position: 'absolute',
+							marginTop: '5px',
+							color: '#666'
+						}
+					}, '正在下载和安装...')
+				])
+			])
+		}
+	})
+	new Vue({
+		data: {
+			pythonCode: 'print(123)',
+			runResult: '',
+			isRunning: false,
+			shouldInstall: false,
+			installing: false,
+			progress: 1,
+			timer: null
+		},
+		beforeMount() {
+			bus.$on('installing', (res) => {
+				this.shouldInstall = false;
+				this.installing = !!res;
+				const time = 8 * 60 * 10;
+				let count = 0;
+				this.timer = setInterval(() => {
+					count++;
+					if (count > time) {
+						clearInterval(this.timer);
+					} else {
+						this.progress = (this.progress * 1000 + 20) / 1000;
+					}
+				}, 100)
+			})
+			ipcRenderer.on('run_result', (event, result) => {
+				this.isRunning = true;
+				this.runResult = result;
+			});
+			ipcRenderer.on('run_error', (event, result) => {
+				this.isRunning = true;
+				this.runResult = result;
+			});
+			ipcRenderer.on('initialCompilerResult', (event, result) => {
+				this.isRunning = true;
+				console.log(result);
+				console.log(typeof result);
+				clearInterval(this.timer);
+				if (result.type === 'success') {
+					setTimeout(() => {
+						this.progress = 100;
+						this.installing = false;
+					}, 1000)
+				} else if (result === 'error') {
+					this.progress = 100;
+					alert('安装失败~');
+				}
+			});
+			ipcRenderer.on('pip_result', (event, result) => {
+				this.isRunning = true;
+				this.runResult = result.content;
+			});
+			ipcRenderer.send('check');
+			ipcRenderer.on('checkResult', (event, result) => {
+				if (!result) {
+					this.shouldInstall = true;
+				}
+			});
+			ipcRenderer.on('debug', (event, info) => {
+				console.log(info);
+			})
+		},
+		methods: {
+			run() {
+				this.isRunning = false;
+				ipcRenderer.send('run', this.pythonCode);
+			},
+			install() {
+				ipcRenderer.send('pip', 'requests');
+			},
+			runPygame() {
+				ipcRenderer.send('runPygameDemo');
+			}
+		}
+	}).$mount('#app');
+</script>
+</html>

@@ -1,0 +1,4 @@
+node_modules
+release*
+.vs_code
+.DS_Store

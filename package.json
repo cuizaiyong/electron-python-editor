@@ -1,0 +1,56 @@
+{
+  "name": "electron-python",
+  "version": "1.0.0",
+  "description": "Python Runtime",
+  "main": "app/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "electron app/main.js",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "cuvee",
+  "license": "ISC",
+  "build": {
+    "productName": "com.electron.maybach",
+    "appId": "test",
+    "copyright": "西瓜创客",
+    "directories": {
+      "output": "release"
+    },
+    "dmg": {
+      "sign": false,
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "files": [
+      "build/**/*",
+      "app/**/*",
+      "scripts/**/*",
+      "app/main.js"
+    ]
+  },
+  "devDependencies": {
+    "electron": "^9.1.0",
+    "electron-builder": "^22.7.0",
+    "serve": "^11.3.2"
+  },
+  "dependencies": {
+    "download": "^8.0.0",
+    "fs-extra": "^9.0.1",
+    "lodash": "^4.17.19",
+    "osenv": "^0.1.5",
+    "tar": "^6.0.2",
+    "tar-fs": "^2.1.0"
+  }
+}

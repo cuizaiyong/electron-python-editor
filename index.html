@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+        }
+        #container {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+</body>
+<script src="./vs/loader.js"></script>
+<script>
+    require.config({ paths: { 'vs': './vs' }});
+    
+    // require('vs/basic-languages/python/python');
+	require(['vs/editor/editor.main'], function() {
+		var editor = monaco.editor.create(document.getElementById('container'), {
+			value: [
+				
+			].join('\n'),
+            language: 'javascript',
+            theme: 'vs-dark'
+        });
+        const code = editor.getValue();
+        console.log(code);
+        monaco.languages.registerCompletionItemProvider('python', {
+            provideCompletionItems: () => {
+                // return this.hints;
+            }
+        })
+    });
+    
+</script>
+</html>
