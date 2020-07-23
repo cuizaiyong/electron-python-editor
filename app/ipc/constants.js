@@ -10,9 +10,9 @@ whiteColor = pygame.Color(255, 255, 255)
 `;
 exports.PYGAME_MODULE = 'pygame==2.0.0.dev6';
 
-exports.INIT_EVENT_RESPOND = 'initialCompilerResult';
+exports.INIT_EVENT_RESPOND = 'initResult';
 
-exports.INIT_EVENT = 'initialCompiler';
+exports.INIT_EVENT = 'init';
 
 
 exports.CHECK = 'check';

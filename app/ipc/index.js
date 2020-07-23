@@ -1,13 +1,17 @@
 const path = require('path');
 const { exec } = require('./exec');
 const { install } = require('./install');
+const { list } = require('./list');
+const { uninstall } = require('./uninstall');
 const { ipcMain } = require('electron');
 const { INIT_EVENT, INIT_EVENT_RESPOND, CHECK, CHECK_RESULT, RUN_PYGAME_DEMO, PYGAME_CODE_DEMO } = require('./constants');
 const cp = require('child_process');
 const { isExistRuntime }  = require('./helper')
 exports.initIpc = (vm) => {
   exec(vm);
+  list(vm);
   install(vm);
+  uninstall(vm);
   initialCompiler();
   check(vm);
   runPygameDemo(vm);
@@ -30,7 +34,7 @@ function check(vm){
   // @todo cache
   ipcMain.on(CHECK, (event) => {
     const isExist = isExistRuntime(vm);
-    event.sender.send(CHECK_RESULT, isExist);
+    event.sender.send(CHECK_RESULT, {status: '0', msg: isExist});
   })
 }
 

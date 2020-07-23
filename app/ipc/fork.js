@@ -9,9 +9,8 @@ const {
 } = require(constantsPath);
 const { isExistRuntime } = require(helperPath);
 const status = {
-  0: 'exist',
-  1: 'success',
-  2: 'fail'
+  'success': '0',
+  'error': '1'
 }
 async function main() {
   try {
@@ -24,19 +23,20 @@ async function main() {
       }
     });
     if (isExistRuntime(vm)) {
-      send({ type: status[0] });
+      send({ status: status.success, msg: true });
       exit(0);
     }
+    console.log(123);
     await vm.$compile();
     const result = await vm.$install(PYGAME_MODULE);
-    send({type: 'install pygame', result})
+    // send({type: 'install pygame', result})
     await vm.$exec(INIT_COMPILER_SCRIPT);
-    send({type: 'cold start'});
+    // send({type: 'cold start'});
   
-    send({type: status[1]});
+    send({status: status.success, msg: 'success'});
     exit(0);
   } catch(e) {
-    send({ type: status[2], info: String(e) });
+    send({ status: status.error, msg: String(e) });
   }
 }
 
@@ -51,12 +51,12 @@ function resolve(filename) {
   return path.resolve(__dirname, filename);
 }
 process.on('uncaughtException', (e) => {
-  send({type: status[2], info: String(e)});
+  send({status: status.error, msg: String(e)});
   exit(0);
 });
 
 process.on('unhandledRejection', (e) => {
-  send({type: status[2], info: String(e)});
+  send({status: status.error, msg: String(e)});
   exit(0);
 })
 main();

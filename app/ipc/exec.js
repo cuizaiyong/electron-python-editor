@@ -1,11 +1,9 @@
 const { ipcMain } = require('electron');
+const EXEC_EVENT = 'run';
+const EXEC_EVENT_RESPOND = 'runResult';
 exports.exec = function (vm) {
-  ipcMain.on('run', async (event, code) => {
+  ipcMain.on(EXEC_EVENT, async (event, code) => {
     const result = await vm.$exec(code);
-    if (result.type === 'error') {
-      event.sender.send('run_error', result.content);
-    } else {
-      event.sender.send('run_result', result.content);
-    }
+    event.sender.send(EXEC_EVENT_RESPOND, result);
   })
 }

@@ -34,25 +34,36 @@ function mixinScriptAndModule(target) {
 		const pip = cp.spawn(vm.$runtimePip, ['install', '-i', PIP_MIRROR, module]);
 		return promisfy(pip);
 	}
+	target.prototype.$uninstall = function(module) {
+		const vm = this;
+		const pip = cp.spawn(vm.$runtimePip, ['uninstall', '-y', module]);
+		return promisfy(pip);
+	}
 	// exec python code
-	target.prototype.$exec = function(code, cb) {
+	target.prototype.$exec = function(code) {
 		const vm = this;
 		const python = cp.spawn(vm.$runtimeBin, ['-c', code]);
 		return promisfy(python);
 	}
+	// list installed modules
+	target.prototype.$list = function() {
+		const vm = this;
+		const list = cp.spawn(vm.$runtimePip, ['freeze']);
+		return promisfy(list);
+	}
 	function promisfy(cp) {
 		return new Promise(resolve => {
 			let result = {
-				type: 'success',
-				content: ''
+				status: '0',
+				msg: ''
 			}
 			cp.stdout.on('data', (data) => {
-				result.content += data.toString();
+				result.msg += data.toString();
 			});
 			
 			cp.stderr.on('data', (data) => {
-				result.type = 'error',
-				result.content += data.toString();
+				result.status = '1',
+				result.msg += data.toString();
 				resolve(result);
 			});
 			

@@ -10,9 +10,10 @@ function createWindow() {
   })
 
   // win.loadFile('index.html');
-  win.loadURL('https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/index.html');
+  // win.loadURL('https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/index.html');
+  win.loadURL('https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/dist/index.html');
 
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
 }
 
 app.whenReady().then(createWindow).then(() => {
