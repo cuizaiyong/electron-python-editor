@@ -41,6 +41,7 @@ function mixinScriptAndModule(target) {
 	}
 	// exec python code
 	target.prototype.$exec = function(code) {
+		console.log(code);
 		const vm = this;
 		const python = cp.spawn(vm.$runtimeBin, ['-c', code]);
 		return promisfy(python);
@@ -125,7 +126,7 @@ function mixinCompile(target) {
 			await target.download(WINDOW_RUNTIME_URL, vm.$compileDir);
 			// target.fse.ensureDir(vm.$compileDir, vm.$home + '\\.xigua\\' + 'python-3.7.8-embed-amd64');
 			depressTar(target, vm.$compileDir, vm.$home + '\\.xigua\\python-3.7.8-embed-amd64.tgz');
-			cp.execFileSync(vm.$runtimeBin, [path.resolve(__dirname, '../../scripts/get-pip.py')]);
+			cp.execFileSync(vm.$runtimeBin, [vm.$home + '\\.xigua\\python-3.7.8-embed-amd64\\get-pip.py']);
 		} else {
 			await download(vm, target, vm.$compileDir);
 

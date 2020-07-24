@@ -33,11 +33,18 @@
         }
       ]
     },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "menuCategory": true,
+      "allowElevation": false
+    },
     "files": [
-      "build/**/*",
       "app/**/*",
-      "scripts/**/*",
-      "app/main.js"
+      "scripts/**/*"
     ]
   },
   "devDependencies": {
