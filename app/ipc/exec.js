@@ -5,5 +5,5 @@ exports.exec = function (vm) {
   ipcMain.on(EXEC_EVENT, async (event, code) => {
     const result = await vm.$exec(code);
     event.sender.send(EXEC_EVENT_RESPOND, result);
-  })
-}
+  });
+};

@@ -2,6 +2,7 @@ const { ipcMain } = require('electron');
 const LIST_EVENT = 'list';
 const LIST_EVENT_RESPOND = 'listResult';
 const fp = require('lodash/fp');
+const { STATUS } = require('./constants');
 class Module {
   constructor(name, description, img, alias, installed) {
     this.hover = false;
@@ -27,29 +28,26 @@ const requests = new Module(
   'https://m.xiguacity.cn/electron-python/client/requests.jpg',
   'requests',
   false
-)
+);
 exports.list = (vm) => {
   ipcMain.on(LIST_EVENT, async (event) => {
     const result = await vm.$list();
-    if(result.status !== '0') {
+    if (result.status !== STATUS.success) {
       event.sender.send(LIST_EVENT_RESPOND, result);
     } else {
       const moduleInfo = fp.lowerCase(result.msg);
-      event.sender.send(
-        LIST_EVENT_RESPOND,
-        {
-          status: '0',
-          msg: [pygame, requests].map(module => {
-            const moduleName = fp.toLower(module.name);
-            if (fp.includes(moduleName, moduleInfo)) {
-              module.installed = true;
-            } else {
-              module.installed = false;
-            }
-            return module;
-          })
-        }
-      );
+      event.sender.send(LIST_EVENT_RESPOND, {
+        status: STATUS.success,
+        msg: [pygame, requests].map((module) => {
+          const moduleName = fp.toLower(module.name);
+          if (fp.includes(moduleName, moduleInfo)) {
+            module.installed = true;
+          } else {
+            module.installed = false;
+          }
+          return module;
+        }),
+      });
     }
-  })
-}
+  });
+};

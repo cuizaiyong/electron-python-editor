@@ -5,5 +5,4 @@ function WebCompiler(options) {
   initIpc(this.vm);
 }
 
-
 module.exports = WebCompiler;

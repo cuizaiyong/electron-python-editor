@@ -5,5 +5,5 @@ exports.install = (vm) => {
   ipcMain.on(INSTALL_EVENT, async (event, module) => {
     const result = await vm.$install(module);
     event.sender.send(INSTALL_EVENT_RESPOND, result);
-  })
-}
+  });
+};

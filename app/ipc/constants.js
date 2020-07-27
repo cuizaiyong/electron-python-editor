@@ -21,6 +21,11 @@ exports.CHECK_RESULT = 'checkResult';
 
 exports.RUN_PYGAME_DEMO = 'runPygameDemo';
 
+exports.STATUS = {
+    success: '0',
+    error: '1'
+}
+
 exports.PYGAME_CODE_DEMO = `
 import pygame, sys, random
 from pygame.locals import *

@@ -6,5 +6,5 @@ exports.uninstall = (vm) => {
     const result = await vm.$uninstall(module);
     console.log(result);
     event.sender.send(UNINSTALL_EVENT_RESPOND, result);
-  })
-}
+  });
+};

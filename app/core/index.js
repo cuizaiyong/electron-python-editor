@@ -6,19 +6,24 @@ function createWindow() {
     height: 1000,
     webPreferences: {
       nodeIntegration: true,
-    }
-  })
+    },
+  });
 
   // win.loadFile('index.html');
   // win.loadURL('https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/index.html');
-  win.loadURL('https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/dist/index.html');
+  win.loadURL(
+    'https://zhishi.oss-cn-beijing.aliyuncs.com/electron-python/dist/index.html'
+  );
 
   // win.webContents.openDevTools()
 }
 
-app.whenReady().then(createWindow).then(() => {
-  new Compiler({
-    beforeCompile() {},
-    compiled() {}
+app
+  .whenReady()
+  .then(createWindow)
+  .then(() => {
+    new Compiler({
+      beforeCompile() {},
+      compiled() {},
+    });
   });
-});
